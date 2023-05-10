@@ -23,8 +23,8 @@ jobs:
       with:
         node-version: 20
     
-    - name: Install npm
-      run: npm i
+    # - name: Install npm
+    #   run: npm i
 
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
