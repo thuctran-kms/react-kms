@@ -1,0 +1,39 @@
+name: SonarQube analysis
+
+on:
+  push:
+    branches: [ "main", "staging", "develop" ]
+  pull_request:
+    branches: [ "main", "staging", "develop" ]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: read # allows SonarQube to decorate PRs with analysis results
+
+jobs:
+  Analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: Analyze with SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # add the URL of your instance to the secrets of this repo with the name SONAR_HOST_URL (Settings > Secrets > Actions > add new repository secret)
+        with:
+          args:
+            -Dsonar.projectKey=my-app
+      - name: Set up node-js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: npm install, build and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm test
