@@ -1,46 +1,20 @@
-name: SonarQube analysis
-
+name: Build
 on:
   push:
-    branches: [ "main", "staging", "develop" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main", "staging", "develop" ]
-  workflow_dispatch:
-
-permissions:
-  pull-requests: read # allows SonarQube to decorate PRs with analysis results
-
+    types: [opened, synchronize, reopened]
 jobs:
-  Analysis:
+  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Analyze with SonarQube
-        uses: sonarsource/sonarqube-scan-action@master
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # add the URL of your instance to the secrets of this repo with the name SONAR_HOST_URL (Settings > Secrets > Actions > add new repository secret)
-      
-      # - name: Set up node-js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 20
-      #     cache: 'npm'
-      
-      # - run: npm ci
-      # # - run: npm run build --if-present
-      # - run: npm test
-
-      # - name: multiple command
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USERNAME }}
-      #     key: ${{ secrets.PRIVATE_KEY }}
-      #     port: ${{ secrets.PORT }}
-      #     script: |
-      #       whoami
-      #       ls -al
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
