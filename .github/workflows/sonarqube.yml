@@ -24,23 +24,23 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # add the URL of your instance to the secrets of this repo with the name SONAR_HOST_URL (Settings > Secrets > Actions > add new repository secret)
       
-      # - name: Set up node-js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 20
-      #     cache: 'npm'
+      - name: Set up node-js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
       
-      # - run: npm ci
-      # # - run: npm run build --if-present
-      # - run: npm test
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
 
-      # - name: multiple command
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USERNAME }}
-      #     key: ${{ secrets.PRIVATE_KEY }}
-      #     port: ${{ secrets.PORT }}
-      #     script: |
-      #       whoami
-      #       ls -al
+      - name: Run command on VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            whoami
+            ls -al
